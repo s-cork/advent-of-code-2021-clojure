@@ -1,1 +1,0 @@
-["^ ","~$input",["^ ","~:row",5,"~:col",1,"~:name","^0","~:ns","~$advent-of-code.day4","~:top-ns","^5"],"~$task1",["^ ","^1",8,"^2",1,"~:fixed-arities",["~#set",[0]],"^3","^7","^4","^5","^6","^5"],"~$task2",["^ ","^1",12,"^2",1,"^8",["^9",[0]],"^3","^:","^4","^5","^6","^5"],"~:filename","/Users/scork/Desktop/Projects/advent_of_code/src/advent_of_code/day4.clj"]

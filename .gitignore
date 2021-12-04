@@ -10,8 +10,7 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
-.hg/
 .lsp
 .clj-kondo
-.calva
 .idea
+advent_of_code.iml
