@@ -12,8 +12,7 @@
   (map + nums (drop 1 nums) (drop 2 nums)))
 
 (defn solver [nums]
-  (->> [(drop 1 nums) nums]
-       (apply map >)
+  (->> (apply map > (drop 1 nums) nums)
        (filter true?)
        count))
 
