@@ -10,31 +10,38 @@
 
 (defn split-space [s] (str/split s #" "))
 
-(defn input->tuples [input]
-  (->> (str/split-lines input)
-       (map (comp to-tuple split-space))))
-
 (def init-pos {:x 0 :depth 0 :aim 0})
 
-(def mapper-1 {:forward #(hash-map :x %) :down #(hash-map :depth %) :up #(hash-map :depth (- %))})
-(def mapper-2 {:forward #(hash-map :x %) :down #(hash-map :aim %) :up #(hash-map :aim (- %))})
+(defn to-instructions-1 [[direction-key val]]
+  (case direction-key
+    :forward {:x val}
+    :down {:depth val}
+    :up {:depth (- val)}))
 
-(defn make-mapper [mapper]
-  (fn [[direction-key val]] ((direction-key mapper) val)))
+(defn to-instructions-2 [[direction-key val]]
+  (case direction-key
+    :forward {:x val}
+    :down {:aim val}
+    :up {:aim (- val)}))
 
 (defn final-total [{:keys [x depth]}]
   (* x depth))
 
-(defn solver [mapper merger]
+(defn merge-with-aim [state {:keys [x aim] :as _instruction}]
+  (if aim (update state :aim + aim)
+      (-> state
+          (update :x + x)
+          (update :depth + (* (:aim state) x)))))
+
+(defn solver [to-instruction merger]
   (fn []
-    (->> (input->tuples input)
-         (map (make-mapper mapper))
+    (->> input
+         str/split-lines
+         (map (comp to-instruction
+                    to-tuple
+                    split-space))
          (reduce merger init-pos)
          final-total)))
 
-(defn merge-aim [prev nxt]
-  (-> (merge-with + prev nxt)
-      (update :depth + (* (:aim prev) (:x nxt 0)))))
-
-(def task1 (solver mapper-1 (partial merge-with +)))
-(def task2 (solver mapper-2 merge-aim))
+(def task1 (solver to-instructions-1 (partial merge-with +)))
+(def task2 (solver to-instructions-2 merge-with-aim))
