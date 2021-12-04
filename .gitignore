@@ -12,5 +12,6 @@ pom.xml.asc
 .hg/
 .lsp
 .clj-kondo
+.calva
 .idea
 advent_of_code.iml
