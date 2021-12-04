@@ -10,38 +10,29 @@
 
 (defn split-space [s] (str/split s #" "))
 
-(def init-pos {:x 0 :depth 0 :aim 0})
-
-(defn to-instructions-1 [[direction-key val]]
+(defn merger-1 [state [direction-key val]]
   (case direction-key
-    :forward {:x val}
-    :down {:depth val}
-    :up {:depth (- val)}))
+    :up (update state :depth - val)
+    :down (update state :depth + val)
+    :forward (update state :x + val)))
 
-(defn to-instructions-2 [[direction-key val]]
+(defn merger-2 [state [direction-key val]]
   (case direction-key
-    :forward {:x val}
-    :down {:aim val}
-    :up {:aim (- val)}))
+    :up (update state :aim - val)
+    :down (update state :aim + val)
+    :forward (-> state
+                 (update :x + val)
+                 (update :depth + (* (:aim state) val)))))
 
 (defn final-total [{:keys [x depth]}]
   (* x depth))
 
-(defn merge-with-aim [state {:keys [x aim] :as _instruction}]
-  (if aim (update state :aim + aim)
-      (-> state
-          (update :x + x)
-          (update :depth + (* (:aim state) x)))))
+(defn solve [merger]
+  (->> input
+       str/split-lines
+       (map (comp to-tuple split-space))
+       (reduce merger {:x 0 :depth 0 :aim 0})
+       final-total))
 
-(defn solver [to-instruction merger]
-  (fn []
-    (->> input
-         str/split-lines
-         (map (comp to-instruction
-                    to-tuple
-                    split-space))
-         (reduce merger init-pos)
-         final-total)))
-
-(def task1 (solver to-instructions-1 (partial merge-with +)))
-(def task2 (solver to-instructions-2 merge-with-aim))
+(defn task1 [] (solve merger-1))
+(defn task2 [] (solve merger-2))
