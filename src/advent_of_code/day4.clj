@@ -58,10 +58,10 @@
 
 ;;;; Check For Winning Boards
 (defn get-marked-piece [{current :current} board]
-  (first (filter #(= current (:val %)) board)))
+  (first (filter (comp #{current} :val) board)))
 
-(defn get-rows [row board] (filter #(= row (:row %)) board))
-(defn get-cols [col board] (filter #(= col (:col %)) board))
+(defn get-rows [row board] (filter (comp #{row} :row) board))
+(defn get-cols [col board] (filter (comp #{col} :col) board))
 
 (defn check-win [state board]
   (when-let [piece (get-marked-piece state board)]
