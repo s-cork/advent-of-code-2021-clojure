@@ -14,50 +14,50 @@
 (defn filter-by-index [coll idx]
   (map (partial nth coll) idx))
 
-(defn ones-zeros [bin-str]
-  (let [total (count bin-str)
-        ones (count (filter #{\1} bin-str))
-        zeros (- total ones)]
-    [ones zeros]))
+(defn zero-wins? [transposed-bit]
+  (neg-int? (reduce #(if (= \1 %2) (+ %1 1) (- %1 1)) 0 transposed-bit)))
 
-(defn decide-most-common [decider bin-str]
-  (let [[ones zeros] (ones-zeros bin-str)]
-    (cond (> ones zeros) (:one decider)
-          (< ones zeros) (:zero decider)
-          :else (:tie decider))))
-
-(defn task1 []
-  (->> bin-strs
-       transpose
-       (map (partial decide-most-common {:one [\1 \0] :zero [\0 \1] :tie [\1 \0]}))
-       transpose
-       (map bin->int)
-       (apply *)))
+(defn decide-most-common [decider transposed-bit]
+  (if (zero-wins? transposed-bit) (:zero decider) (:one decider)))
 
 (defn reduce-indices
-  [indices bin-str decider]
-  (let [bin-chars (filter-by-index bin-str indices)
+  [indices transposed-bit decider]
+  (let [bin-chars (filter-by-index transposed-bit indices)
         most-common (decide-most-common decider bin-chars)]
-    (filter identity (map #(and (= %1 most-common) %2) bin-chars indices))))
+    (reduce (fn [result [chr index]]
+              (if (#{most-common} chr) (conj result index) result))
+            []
+            (map vector bin-chars indices))))
 
 (defn get-initial-indices [transposed]
   (range (.length (first transposed))))
 
-(defn get-index [transposed decider]
-  (loop [indices (get-initial-indices transposed)
-         n 0]
-    (if-not (seq (next indices))
-      (first indices)
-      (recur (reduce-indices indices (nth transposed n) decider)
-             (inc n)))))
+(defn get-index [decider transposed]
+  (first (reduce (fn [indices transposed-bit]
+                   (if (= 1 (count indices))
+                     (reduced indices)
+                     (reduce-indices indices transposed-bit decider)))
+                 (get-initial-indices transposed)
+                 transposed)))
 
-(def decider-o2 {:one \1 :zero \0 :tie \1})
-(def decider-co2 {:one \0 :zero \1 :tie \0})
+(defn get-final-bit-1 [_original decider transposed]
+  (->> (map (partial decide-most-common decider) transposed)
+       (apply str)))
+
+(defn get-final-bit-2 [original decider transposed]
+  (->> (get-index decider transposed)
+       (nth original)))
+
+(defn solve [& get-final-bit-fns]
+  (->> (transpose bin-strs)
+       ((apply juxt get-final-bit-fns))
+       (map bin->int)
+       (apply *)))
+
+(defn task1 []
+  (solve (partial get-final-bit-1 bin-strs {:one \1 :zero \0})
+         (partial get-final-bit-1 bin-strs {:one \0 :zero \1})))
 
 (defn task2 []
-  (let [transposed (transpose bin-strs)]
-    (->> [decider-o2 decider-co2]
-         (map (comp bin->int                                ;; [23 10]
-                    (partial nth bin-strs)                  ;; ["10111" "01010"]
-                    (partial get-index transposed)))        ;; [3 11]
-         (apply *))))                                       ;; 230
+  (solve (partial get-final-bit-2 bin-strs {:one \1 :zero \0})
+         (partial get-final-bit-2 bin-strs {:one \0 :zero \1})))
