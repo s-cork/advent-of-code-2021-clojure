@@ -102,14 +102,11 @@
     (* current unmarked-sum)))
 
 ;;;; Tasks
-(defn task1 []
-  (loop [{win :win :as state} init-state]
-    (if win
+(defn play-bingo [end-game?]
+  (loop [state init-state]
+    (if (end-game? state)
       (bingo state)
       (recur (bingo-call state)))))
 
-(defn task2 []
-  (loop [{boards :boards :as state} init-state]
-    (if (empty? boards)
-      (bingo state)
-      (recur (bingo-call state)))))
+(defn task1 [] (play-bingo :win))
+(defn task2 [] (play-bingo (comp empty? :boards)))
