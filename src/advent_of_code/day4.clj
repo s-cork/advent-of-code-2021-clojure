@@ -1,47 +1,29 @@
 (ns advent-of-code.day4
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [advent-of-code.utils :refer :all]))
 
 (def input "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1\n\n22 13 17 11  0\n 8  2 23  4 24\n21  9 14 16  7\n 6 10  3 18  5\n 1 12 20 15 19\n\n 3 15  0  2 22\n 9 18 13 17  5\n19  8  7 25 23\n20 11 10 24  4\n14 21 16 12  6\n\n14 21 17 24  4\n10 16 15  9 19\n18  8 23 26 20\n22 11 13  6  5\n 2  0 12  3  7\n")
-(def input (slurp (io/resource "input-day4.txt")))
+;;(def input (slurp (io/resource "input-day4.txt")))
 
 ;;;; HELPERS to get state from the input
-(defn to-int [s] (Integer/parseInt s))
-
-(defn split-white-space [s]
-  (-> (str/trim s)
-      (str/split #"\s+")))
-
-(defn strings->ints [row] (map to-int row))
-
 (defn get-draw-cards [line]
-  (strings->ints (str/split line #",")))
+  (map str->int (split-comma line)))
 
-(defn row-info->board-piece [row-idx col-idx val]
-  {:val val :marked false :row row-idx :col col-idx})
+(defn pos-val->board-piece [pos val]
+  {:val val :marked false :row (quot pos 5) :col (rem pos 5)})
 
-(defn map-indexed-from-row [row-idx row]
-  (map-indexed (partial row-info->board-piece row-idx) row))
-
-(defn as-board-pieces [rows]
-  (->> rows
-       (map-indexed map-indexed-from-row)
-       flatten))
-
-(defn lines->board-pieces [lines]
-  (->> (rest lines)                                         ;; first line is blank
-       (map (comp strings->ints split-white-space))
-       as-board-pieces))
-
-(defn get-boards [lines]
-  (->> (partition 6 lines)
-       (map lines->board-pieces)))
+(defn get-board-pieces [lines]
+  (->> (str/split-lines lines)
+       (mapcat split-white-space)
+       (map str->int)
+       (map-indexed pos-val->board-piece)))
 
 (defn get-init-state []
-  (let [lines (str/split-lines input)]
+  (let [lines (split-multi-lines input)]
     {:draw    (get-draw-cards (first lines))
-     :boards  (get-boards (rest lines))
-     :win     false
+     :boards  (map get-board-pieces (rest lines))
+     :win     nil
      :current nil}))
 
 (def init-state (get-init-state))
@@ -84,7 +66,7 @@
 (defn draw-card [{draw :draw :as state}]
   (merge state {:draw (rest draw) :current (first draw)}))
 
-(defn bingo-call [state]
+(defn bingo-round [state]
   (-> state
       draw-card
       mark-boards
@@ -106,7 +88,7 @@
   (loop [state init-state]
     (if (end-game? state)
       (bingo state)
-      (recur (bingo-call state)))))
+      (recur (bingo-round state)))))
 
 (defn task1 [] (play-bingo :win))
 (defn task2 [] (play-bingo (comp empty? :boards)))

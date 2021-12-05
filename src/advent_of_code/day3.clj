@@ -1,12 +1,12 @@
 (ns advent-of-code.day3
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [advent-of-code.utils :refer [bin-str->int]]))
 
 (def input "00100\n11110\n10110\n10111\n10101\n01111\n00111\n11100\n10000\n11001\n00010\n01010")
 ;;(def input (slurp (io/resource "input-day3.txt")))
 
 (def bin-strs (str/split-lines input))
-(defn bin->int [s] (Integer/parseInt s 2))
 
 (defn transpose [m]
   (apply mapv str m))
@@ -51,7 +51,7 @@
 (defn solve [& get-final-bit-fns]
   (->> (transpose bin-strs)
        ((apply juxt get-final-bit-fns))
-       (map bin->int)
+       (map bin-str->int)
        (apply *)))
 
 (defn task1 []
