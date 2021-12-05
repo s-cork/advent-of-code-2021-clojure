@@ -18,3 +18,6 @@
 
 (defn split-comma [s]
   (str/split s #","))
+
+(defn re-seq-ints [s]
+  (strings->ints (re-seq #"\d+" s)))

@@ -7,21 +7,16 @@
 ;;(def input (slurp (io/resource "input-day4.txt")))
 
 ;;;; HELPERS to get state from the input
-(defn get-draw-cards [line]
-  (map str->int (split-comma line)))
-
 (defn pos-val->board-piece [pos val]
   {:val val :marked false :row (quot pos 5) :col (rem pos 5)})
 
 (defn get-board-pieces [lines]
-  (->> (str/split-lines lines)
-       (mapcat split-white-space)
-       (map str->int)
+  (->> (re-seq-ints lines)
        (map-indexed pos-val->board-piece)))
 
 (defn get-init-state []
   (let [lines (split-multi-lines input)]
-    {:draw    (get-draw-cards (first lines))
+    {:draw    (re-seq-ints (first lines))
      :boards  (map get-board-pieces (rest lines))
      :win     nil
      :current nil}))
