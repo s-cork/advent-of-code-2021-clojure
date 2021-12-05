@@ -21,3 +21,11 @@
 
 (defn re-seq-ints [s]
   (strings->ints (re-seq #"\d+" s)))
+
+(defn abs [n]
+  (if (neg? n) (- n) n))
+
+(defn gcd [a b]
+  (if (zero? b)
+    (abs a)
+    (recur b (mod a b))))
