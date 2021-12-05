@@ -7,6 +7,9 @@
 (defn str->int [s]
   (Integer/parseInt s))
 
+(defn strings->ints [coll]
+  (map str->int coll))
+
 (defn bin-str->int [s]
   (Integer/parseInt s 2))
 
