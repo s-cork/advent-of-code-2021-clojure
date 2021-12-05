@@ -1,14 +1,13 @@
-(ns advent-of-code.day2
+(ns aoc.2021.day2
   (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [aoc.file-utils :as file-utils]))
 
-(def input "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2")
-(def input (slurp (io/resource "input-day2.txt")))
+;;(def input-lines (str/split-lines "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2"))
+(def input-lines (file-utils/read-lines "2021/day2.txt"))
 
-(defn to-tuple [[direction amount]]
-  [(keyword direction) (Integer/parseInt amount)])
-
-(defn split-space [s] (str/split s #" "))
+(defn line->tuple [line]
+  (let [[direction amount] (str/split line " ")]
+    [(keyword direction) (Integer/parseInt amount)]))
 
 (defn merger-1 [state [direction-key val]]
   (case direction-key
@@ -28,9 +27,8 @@
   (* x depth))
 
 (defn solve [merger]
-  (->> input
-       str/split-lines
-       (map (comp to-tuple split-space))
+  (->> input-lines
+       (map line->tuple)
        (reduce merger {:x 0 :depth 0 :aim 0})
        final-total))
 

@@ -1,13 +1,11 @@
-(ns advent-of-code.day5
-  (:require [clojure.java.io :as io]
-            [clojure.string :as str]
-            [advent-of-code.utils :refer [re-seq-ints]]))
+(ns aoc.2021.day5
+  (:require [aoc.string-utils :refer [str->ints]]
+            [aoc.file-utils :as file-utils]))
 
-;; (def input "0,9 -> 5,9\n8,0 -> 0,8\n9,4 -> 3,4\n2,2 -> 2,1\n7,0 -> 7,4\n6,4 -> 2,0\n0,9 -> 2,9\n3,4 -> 1,4\n0,0 -> 8,8\n5,5 -> 8,2")
-(def input (slurp (io/resource "input-day5.txt")))
+;;(def input (str/split-lines "0,9 -> 5,9\n8,0 -> 0,8\n9,4 -> 3,4\n2,2 -> 2,1\n7,0 -> 7,4\n6,4 -> 2,0\n0,9 -> 2,9\n3,4 -> 1,4\n0,0 -> 8,8\n5,5 -> 8,2"))
+(def input (file-utils/read-lines "2021/day5.txt"))
 
-(def coord-pairs (->> (str/split-lines input)
-                      (map re-seq-ints)))
+(def coord-pairs (map str->ints input))
 
 (defn h-or-v? [[x1 y1 x2 y2]] (or (= x1 x2) (= y1 y2)))
 

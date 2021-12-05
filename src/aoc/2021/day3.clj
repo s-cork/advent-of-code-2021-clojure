@@ -1,12 +1,9 @@
-(ns advent-of-code.day3
-  (:require [clojure.java.io :as io]
-            [clojure.string :as str]
-            [advent-of-code.utils :refer [bin-str->int]]))
+(ns aoc.2021.day3
+  (:require [aoc.string-utils :refer [bin-str->int]]
+            [aoc.file-utils :as file-utils]))
 
-(def input "00100\n11110\n10110\n10111\n10101\n01111\n00111\n11100\n10000\n11001\n00010\n01010")
-;;(def input (slurp (io/resource "input-day3.txt")))
-
-(def bin-strs (str/split-lines input))
+;;(def bin-strs (str/split-lines "00100\n11110\n10110\n10111\n10101\n01111\n00111\n11100\n10000\n11001\n00010\n01010"))
+(def bin-strs (file-utils/read-lines "2021/day3.txt"))
 
 (defn transpose [m]
   (apply mapv str m))
@@ -15,7 +12,7 @@
   (map (partial nth coll) idx))
 
 (defn zero-wins? [transposed-bit]
-  (neg-int? (reduce #(if (= \1 %2) (+ %1 1) (- %1 1)) 0 transposed-bit)))
+  (= \0 (ffirst (sort-by val (frequencies (seq transposed-bit))))))
 
 (defn decide-most-common [decider transposed-bit]
   (if (zero-wins? transposed-bit) (:zero decider) (:one decider)))
