@@ -21,8 +21,7 @@
   (->> positions
        sort
        (reduce-to-fuel diff-fn)
-       (sort-by val)
-       first
+       (apply min-key second)
        (zipmap [:pos :fuel])))
 
 (defn task1 [] (solve distance))
