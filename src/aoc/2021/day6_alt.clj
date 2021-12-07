@@ -29,10 +29,10 @@
 
 (defn get-nth-count [n]
   (as-> init-fish-counters $
-        (iterate gen-fish $)
-        (nth $ n)
-        (vals $)
-        (apply + $)))
+    (iterate gen-fish $)
+    (nth $ n)
+    (vals $)
+    (apply + $)))
 
 (comment
   (get-nth-count 80)
